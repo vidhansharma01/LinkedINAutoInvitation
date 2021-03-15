@@ -14,8 +14,8 @@ public class TestGuys {
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         //driver.manage().window().fullscreen();
-        driver.findElement(By.id("session_key")).sendKeys("vidhansharma01@hotmail.com");
-        driver.findElement(By.id("session_password")).sendKeys("rubyonrails$");
+        driver.findElement(By.id("session_key")).sendKeys("-----");
+        driver.findElement(By.id("session_password")).sendKeys("----------");
         driver.findElement(By.className("sign-in-form__submit-button")).click();
 
         /*
