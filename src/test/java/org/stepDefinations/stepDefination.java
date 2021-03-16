@@ -5,8 +5,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.base;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.pageObjects.HomePage;
 import org.pageObjects.LoginOrSignUpPage;
 import org.pageObjects.MyNetworkPage;
@@ -15,9 +16,9 @@ import java.util.List;
 
 public class stepDefination extends base {
     /*
-    Login Test case
+    Withdraw connection
     */
-    WebDriver driver;
+    public WebDriver driver;
     @Given("^User is on Welcome page$")
     public void user_is_on_welcome_page() throws Throwable {
         driver = initializeDriver();
@@ -29,38 +30,17 @@ public class stepDefination extends base {
         loginOrSignUpPage.getEmailElement().sendKeys(email);
         loginOrSignUpPage.getPasswordElement().sendKeys(password);
         loginOrSignUpPage.getSubmitBtnElement().click();
-    }
 
-    @Then("^Home page is populated$")
-    public void home_page_is_populated() throws Throwable {
-        //User is able to login
     }
-    /*
-    Clicking on MyNetwork TestCase
-    */
-    @Given("^User is on Home Page$")
-    public void user_is_on_home_page() throws Throwable {
-        //User is on home page already
-    }
-
-    @When("^User click on My Network$")
+    @And("^User click on My Network$")
     public void user_click_on_my_network() throws Throwable {
         HomePage homePage = new HomePage(driver);
+        homePage.getMsgBubble().click();
         homePage.getMyNetwork().click();
-    }
-
-    @Then("^User is navigated to their network page$")
-    public void user_is_navigated_to_their_network_page() throws Throwable {
-        //User is navigated to that page
-    }
-    /*User click on Manage Text
-    * */
-    @Given("^User is on MyNetwork Page$")
-    public void user_is_on_mynetwork_page() throws Throwable {
-        //User is on the network page
+        Thread.sleep(2000);
     }
     MyNetworkPage myNetworkPage;
-    @When("^User click on Manage Text$")
+    @And("^User click on Manage Text$")
     public void user_click_on_manage_text() throws Throwable {
         myNetworkPage = new MyNetworkPage(driver);
         myNetworkPage.getManage().click();
@@ -70,18 +50,66 @@ public class stepDefination extends base {
     public void user_click_on_the_sent_button() throws Throwable {
         myNetworkPage.getRequestSent().click();
     }
+
     @And("^User click on the Withdraw button to withdraw the connection request$")
     public void user_click_on_the_withdraw_button_to_withdraw_the_connection_request() throws Throwable {
+        Thread.sleep(5000);
         List<WebElement> lstButtons = myNetworkPage.getButtons();
         for (int i = 0; i < lstButtons.size(); i++){
+            new WebDriverWait(driver, 20)
+                    .until(ExpectedConditions.elementToBeClickable(lstButtons.get(i)));
             lstButtons.get(i).click();
-            Thread.sleep(300);
+            myNetworkPage.getWithdrawModal().click();
+            myNetworkPage.deleteToastMsg().click();
         }
     }
-    @Then("^User is naviagted to the Manage Invitations Page$")
-    public void user_is_naviagted_to_the_manage_invitations_page() throws Throwable {
+    @Then("^The connection are withdrawn$")
+    public void the_connection_are_withdrawn() throws Throwable {
 
     }
 
+    /*
+        Send connection requests
+     */
+    @And("^User enters \"([^\"]*)\" in the search bar$")
+    public void user_enters_something_in_the_search_bar(String roles) throws Throwable {
+        myNetworkPage = new MyNetworkPage(driver);
+        myNetworkPage.getSearchBar().sendKeys(roles);
+        myNetworkPage.getSearchBar().sendKeys(Keys.RETURN);
+    }
+    @And("^User click on See all People link$")
+    public void user_click_on_see_all_people_link() throws Throwable {
+        new WebDriverWait(driver, 10)
+                .until(ExpectedConditions.elementToBeClickable(myNetworkPage.getAllPeople()));
+        myNetworkPage.getAllPeople().click();
+        Thread.sleep(5000);
+        //Scroll to the bottom of the page
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("window.scrollBy(0, 1500)");
+        Thread.sleep(5000);
+        //Click on PageNavigator
+        myNetworkPage.getPageNavigator();
+        Thread.sleep(5000);
+        js.executeScript("window.scrollBy(0, -1500)");
+    }
+    private JavascriptExecutor js;
+    @And("^User click on Connect button$")
+    public void user_click_on_connect_button() throws Throwable {
+        js = (JavascriptExecutor) driver;
+        List<WebElement> lstConnectBtn = myNetworkPage.getConnectBtn();
+        for (int i = 0; i < lstConnectBtn.size(); i++) {
+            lstConnectBtn.get(i).click();
+            WebElement sendBtn = myNetworkPage.getSendBtn();
+            if (sendBtn.isEnabled())
+                driver.findElement(By.xpath("//span[text()='Send']/parent::button")).click();
+            else{
+                driver.findElement(By.xpath("//button[contains(@class, 'artdeco-modal__dismiss artdeco-button artdeco-button--circle ')]")).click();
+            }
+            js.executeScript("window.scrollBy(0, 100)");
+        }
+    }
+    @Then("^Connect requet is send$")
+    public void connect_requet_is_send() throws Throwable {
 
+    }
 }

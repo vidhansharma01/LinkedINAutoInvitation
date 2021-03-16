@@ -7,6 +7,7 @@ import org.openqa.selenium.support.FindBy;
 public class LoginOrSignUpPage extends PageBase {
     public LoginOrSignUpPage(WebDriver driver){
         super(driver);
+        driver.manage().window().maximize();
     }
 
     @FindBy(id="session_key")

@@ -12,7 +12,14 @@ public class HomePage extends PageBase{
     @FindBy(xpath = "//li[@class='global-nav__primary-item']/a[@href='/mynetwork/']")
     private WebElement myNetwork;
 
+    @FindBy(className = "msg-overlay-bubble-header")
+    private WebElement msgBubble;
+
     public WebElement getMyNetwork(){
         return myNetwork;
+    }
+
+    public WebElement getMsgBubble(){
+        return msgBubble;
     }
 }
